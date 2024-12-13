@@ -35,6 +35,7 @@ void autonomous() {
 }
 
 void opcontrol() {
+    int intakeMotorOn = 0;
     while (true) {
         int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
         int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
@@ -42,10 +43,22 @@ void opcontrol() {
         if (PTO.is_extended()) chassisPTO.curvature(leftY, rightX);
         else chassis.curvature(leftY, rightX);
 
-        if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+        if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) {
+          if (intakeMotorOn == 0 || intakeMotorOn == -1)
+            intakeMotorOn = 1;
+          else
+            intakeMotorOn = 0;
+        } else if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)) {
+          if (intakeMotorOn == 0 || intakeMotorOn == 1)
+            intakeMotorOn = -1;
+          else
+            intakeMotorOn = 0;
+        }
+
+        if (intakeMotorOn == 1) {
             intakeMotor.move(127);
             intakeHookMotor.move(127);
-        } else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+        } else if (intakeMotorOn == -1) {
             intakeMotor.move(-127);
             intakeHookMotor.move(-127);
         } else {
