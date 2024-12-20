@@ -2,8 +2,7 @@
 
 #include "pros/motors.hpp"
 #include "pros/optical.hpp"
-
-class Intake {
+#include "pros/adi.hpp"
 
 enum Color {
   Red,
@@ -17,12 +16,28 @@ enum Destination {
   Lift
 };
 
+enum State {
+  Idle,
+  Intaking,
+  Outtaking,
+  Ejecting,
+  EjectStop,
+  IntakeLift,
+  LiftReverse,
+  IntakeMogo
+};
+
+class Intake {
 public:
-  Intake(pros::Motor intakeMotor, pros::Motor hookMotor, pros::Optical colorSensor);
+  Intake(pros::Motor intakeMotor, pros::Motor hookMotor, pros::Optical colorSensor, pros::ADIDigitalIn limitSwitch);
   void update();
+  void stop();
   void intakeToMogo();
   void intakeToLift();
   void outtake();
+
+  // TODO: intakeOneRing(), mogoOneRing(), liftOneRing()
+
   /**
    * sets the color filter
    * @param filter the color to eject
@@ -33,21 +48,11 @@ public:
    * @returns the color of the ring in the intake, Color::None if there is no ring
    */
   Color getCurrentRingColor();
-private:
-  enum State {
-    Idle,
-    Intaking,
-    Outtaking,
-    Ejecting,
-    EjectStop,
-    IntakeLift,
-    LiftReverse,
-    IntakeMogo
-  };
-  Destination ringDestination;
-  Color filter;
-  Color currentRing;
   State currentState;
+  Color filter = Color::None;
+  Color currentRing;
+private:
+  Destination ringDestination;
 
   double ringStart;
   int ejectTimer = -1;
@@ -55,6 +60,7 @@ private:
   pros::Motor intakeMotor;
   pros::Motor hookMotor;
   pros::Optical colorSensor;
+  pros::ADIDigitalIn limitSwitch;
 
   void updateIdle();
   void updateIntaking();
@@ -65,7 +71,7 @@ private:
   void updateLiftReverse();
   void updateIntakeMogo();
   
-  double EJECT_OFFSET = 0.5;
+  double EJECT_OFFSET = 300;
   double LIFT_REVERSE_OFFSET = 0.4;
   double LIFT_OFFSET = -0.2;
   double MOGO_OFFSET = 0.7;

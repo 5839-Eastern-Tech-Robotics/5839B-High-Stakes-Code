@@ -6,8 +6,12 @@
 #include "pros/misc.hpp"
 #include "pros/motor_group.hpp"
 #include "pros/motors.hpp"
+#include "pros/optical.hpp"
+#include "robot/subsytems/intake.hpp"
 
 extern pros::Controller controller;
+
+extern pros::Optical colorSensor;
  
 extern pros::Motor intakeMotor;
 extern pros::Motor intakeHookMotor;
@@ -38,3 +42,5 @@ extern lemlib::ExpoDriveCurve steerCurve;
 
 extern lemlib::Chassis chassis;
 extern lemlib::Chassis chassisPTO;
+
+extern Intake intake;

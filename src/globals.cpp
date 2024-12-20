@@ -1,6 +1,11 @@
 #include "globals.hpp"
+#include "robot/subsytems/intake.hpp"
+#include "pros/optical.hpp"
 
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
+
+pros::Optical colorSensor(11);
+pros::ADIDigitalIn ringSwitch('F');
 
 pros::Motor intakeMotor(-12);
 pros::Motor intakeHookMotor(9);
@@ -75,3 +80,5 @@ lemlib::ExpoDriveCurve steerCurve(3,
 
 lemlib::Chassis chassis(drivetrain, linearController, angularController, sensors, &throttleCurve, &steerCurve);
 lemlib::Chassis chassisPTO(drivetrainPTO, linearController, angularController, sensors, &throttleCurve, &steerCurve);
+
+Intake intake(intakeMotor, intakeHookMotor, colorSensor, ringSwitch);

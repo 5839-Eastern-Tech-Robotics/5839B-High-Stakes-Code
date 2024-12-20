@@ -1,11 +1,15 @@
 #include "robot/subsytems/intake.hpp"
+#include "pros/adi.hpp"
 #include "pros/motors.hpp"
 #include "pros/optical.hpp"
 #include "pros/rtos.hpp"
-  
-Intake::Intake(pros::Motor intakeMotor, pros::Motor hookMotor, pros::Optical colorSensor) :
-    intakeMotor(intakeMotor), hookMotor(hookMotor), colorSensor(colorSensor),
-    currentState(State::Idle), currentRing(Color::None), ringDestination(Destination::Mogo) {}
+#include <cstdio>
+
+Intake::Intake(pros::Motor intakeMotor, pros::Motor hookMotor,
+               pros::Optical colorSensor, pros::ADIDigitalIn limitSwitch)
+    : intakeMotor(intakeMotor), hookMotor(hookMotor), colorSensor(colorSensor),
+      currentState(State::Idle), currentRing(Color::None),
+      ringDestination(Destination::Mogo), limitSwitch(limitSwitch) {}
 
 void Intake::update() {
   switch (currentState) {
@@ -36,6 +40,8 @@ void Intake::update() {
   }
 }
 
+void Intake::stop() { currentState = State::Idle; }
+
 void Intake::outtake() {
     currentState = State::Outtaking;
 }
@@ -54,27 +60,41 @@ void Intake::setColorFilter(Color filter) {
   this->filter = filter;
 }
 
-Intake::Color Intake::getCurrentRingColor() {
-  return currentRing;
-}
+Color Intake::getCurrentRingColor() { return currentRing; }
 
 void Intake::updateIdle() {
   this->intakeMotor.move(0);
   this->hookMotor.move(0);
+
+  if (this->colorSensor.get_proximity() < 200) {
+    printf("No Ring Detected\n");
+    return;
+  }
+
+  printf("%s Ring Detected\n",
+         this->colorSensor.get_hue() > 300 || this->colorSensor.get_hue() < 50
+             ? "Red"
+         : this->colorSensor.get_hue() > 150 &&
+                 this->colorSensor.get_hue() < 250
+             ? "Blue"
+             : "Other");
 }
 
 void Intake::updateIntaking() {
   this->intakeMotor.move(127);
   this->hookMotor.move(127);
 
-  if (this->colorSensor.get_proximity() > 25) return;
+  if (this->colorSensor.get_proximity() < 200)
+    return;
 
   this->ringStart = this->hookMotor.get_position();
 
-  this->currentRing = 
-    this->colorSensor.get_hue() > 300 || this->colorSensor.get_hue() < 100 ? Color::Red :
-    this->colorSensor.get_hue() > 180 && this->colorSensor.get_hue() < 300 ? Color::Blue :
-    Color::None;
+  this->currentRing =
+      this->colorSensor.get_hue() > 300 || this->colorSensor.get_hue() < 50
+          ? Color::Red
+      : this->colorSensor.get_hue() > 150 && this->colorSensor.get_hue() < 250
+          ? Color::Blue
+          : Color::None;
 
   if (this->filter == Color::None) {
     if (this->ringDestination == Destination::Lift)
@@ -108,15 +128,23 @@ void Intake::updateOuttaking() {
 void Intake::updateEjecting() {
   this->intakeMotor.move(127);
   this->hookMotor.move(127);
-  if (this->hookMotor.get_position() - this->ringStart >= this->EJECT_OFFSET)
+
+  // if (this->hookMotor.get_position() - this->ringStart >= this->EJECT_OFFSET)
+  if (this->limitSwitch.get_new_press()) {
+    this->ejectTimer = -1;
     this->currentState = State::EjectStop;
+  }
 }
 
 void Intake::updateEjectStop() {
-  this->hookMotor.move(0);
-  if (this->ejectTimer < 0)
+  this->hookMotor.move(-127);
+  printf("eject timer: %i; time left: %i\n", ejectTimer,
+         ejectTimer - pros::millis());
+  if (this->ejectTimer < 0) {
     this->ejectTimer = pros::millis() + 250;
-  else if (this->ejectTimer - pros::millis() < 0) {
+  }
+
+  if ((ejectTimer - pros::millis()) <= 0) {
     this->ejectTimer = -1;
     this->currentState = State::Intaking;
   }
@@ -125,7 +153,9 @@ void Intake::updateEjectStop() {
 void Intake::updateIntakeLift() {
   this->intakeMotor.move(127);
   this->hookMotor.move(127);
-  if (this->hookMotor.get_position() - this->ringStart >= this->LIFT_REVERSE_OFFSET) {
+  // if (this->hookMotor.get_position() - this->ringStart >=
+  // this->LIFT_REVERSE_OFFSET) {
+  if (this->limitSwitch.get_new_press()) {
     this->currentState = State::LiftReverse;
     this->ringStart = hookMotor.get_position();
   }
