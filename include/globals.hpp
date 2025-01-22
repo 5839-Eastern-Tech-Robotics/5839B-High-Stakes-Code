@@ -1,8 +1,10 @@
 #pragma once
 
 #include "lemlib/chassis/chassis.hpp"
+#include "lemlib/chassis/trackingWheel.hpp"
 #include "lemlib/pid.hpp"
 #include "pros/adi.hpp"
+#include "pros/imu.hpp"
 #include "pros/misc.hpp"
 #include "pros/motor_group.hpp"
 #include "pros/motors.hpp"
@@ -12,6 +14,7 @@
 extern pros::Controller controller;
 
 extern pros::Optical colorSensor;
+extern pros::adi::DigitalIn ringSwitch;
  
 extern pros::Motor intakeMotor;
 extern pros::Motor intakeHookMotor;
@@ -35,6 +38,13 @@ extern lemlib::Drivetrain drivetrainPTO;
 extern lemlib::ControllerSettings linearController;
 extern lemlib::ControllerSettings angularController;
  
+extern pros::Rotation horizontalSensor;
+extern pros::Rotation verticalSensor;
+extern pros::Imu imu;
+
+extern lemlib::TrackingWheel horizontalPod;
+extern lemlib::TrackingWheel verticalPod;
+
 extern lemlib::OdomSensors sensors;
  
 extern lemlib::ExpoDriveCurve throttleCurve;

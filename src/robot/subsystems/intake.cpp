@@ -4,6 +4,7 @@
 #include "pros/optical.hpp"
 #include "pros/rtos.hpp"
 #include <cstdio>
+#include <filesystem>
 
 Intake::Intake(pros::Motor intakeMotor, pros::Motor hookMotor,
                pros::Optical colorSensor, pros::ADIDigitalIn limitSwitch)
@@ -31,6 +32,9 @@ void Intake::update() {
     case State::IntakeLift:
       updateIntakeLift();
       break;
+    case State::IntakeHold:
+      updateIntakeHold();
+      break;
     case State::LiftReverse:
       updateLiftReverse();
       break;
@@ -41,6 +45,10 @@ void Intake::update() {
 }
 
 void Intake::stop() { currentState = State::Idle; }
+
+void Intake::setIntakeSpeed(int speed) {
+  this->intakeSpeed = speed;
+}
 
 void Intake::outtake() {
     currentState = State::Outtaking;
@@ -54,6 +62,10 @@ void Intake::intakeToLift() {
 void Intake::intakeToMogo() {
   currentState = State::Intaking;
   ringDestination = Destination::Mogo;
+}
+
+void Intake::intakeToHold() {
+  currentState = State::IntakeHold;
 }
 
 void Intake::setColorFilter(Color filter) {
@@ -81,8 +93,8 @@ void Intake::updateIdle() {
 }
 
 void Intake::updateIntaking() {
-  this->intakeMotor.move(127);
-  this->hookMotor.move(127);
+  this->intakeMotor.move(this->intakeSpeed);
+  this->hookMotor.move(this->intakeSpeed);
 
   if (this->colorSensor.get_proximity() < 200)
     return;
@@ -121,13 +133,13 @@ void Intake::updateIntaking() {
 }
 
 void Intake::updateOuttaking() {
-  this->intakeMotor.move(-127);
-  this->hookMotor.move(-127);
+  this->intakeMotor.move(-this->intakeSpeed);
+  this->hookMotor.move(-this->intakeSpeed);
 }
 
 void Intake::updateEjecting() {
-  this->intakeMotor.move(127);
-  this->hookMotor.move(127);
+  this->intakeMotor.move(this->intakeSpeed);
+  this->hookMotor.move(this->intakeSpeed);
 
   // if (this->hookMotor.get_position() - this->ringStart >= this->EJECT_OFFSET)
   if (this->limitSwitch.get_new_press()) {
@@ -137,9 +149,9 @@ void Intake::updateEjecting() {
 }
 
 void Intake::updateEjectStop() {
-  this->hookMotor.move(-127);
-  printf("eject timer: %i; time left: %i\n", ejectTimer,
-         ejectTimer - pros::millis());
+  this->hookMotor.move(-this->intakeSpeed);
+  // printf("eject timer: %i; time left: %i\n", ejectTimer,
+  //        ejectTimer - pros::millis());
   if (this->ejectTimer < 0) {
     this->ejectTimer = pros::millis() + 250;
   }
@@ -151,8 +163,8 @@ void Intake::updateEjectStop() {
 }
 
 void Intake::updateIntakeLift() {
-  this->intakeMotor.move(127);
-  this->hookMotor.move(127);
+  this->intakeMotor.move(this->intakeSpeed);
+  this->hookMotor.move(this->intakeSpeed);
   // if (this->hookMotor.get_position() - this->ringStart >=
   // this->LIFT_REVERSE_OFFSET) {
   if (this->limitSwitch.get_new_press()) {
@@ -161,15 +173,20 @@ void Intake::updateIntakeLift() {
   }
 }
 
+void Intake::updateIntakeHold() {
+  this->intakeMotor.move(this->intakeSpeed);
+  this->hookMotor.move(0);
+}
+
 void Intake::updateLiftReverse() {
-  this->hookMotor.move(-127);
+  this->hookMotor.move(-this->intakeSpeed);
   if (this->hookMotor.get_position() - this->ringStart <= this->LIFT_OFFSET)
     this->currentState = State::Intaking;
 }
 
 void Intake::updateIntakeMogo() {
-  this->intakeMotor.move(127);
-  this->hookMotor.move(127);
+  this->intakeMotor.move(this->intakeSpeed);
+  this->hookMotor.move(this->intakeSpeed);
   if (this->hookMotor.get_position() - this->ringStart >= this->MOGO_OFFSET)
     this->currentState = State::Intaking;
 }

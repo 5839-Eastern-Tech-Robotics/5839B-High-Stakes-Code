@@ -23,18 +23,21 @@ enum State {
   Ejecting,
   EjectStop,
   IntakeLift,
+  IntakeHold,
   LiftReverse,
   IntakeMogo
 };
 
 class Intake {
 public:
-  Intake(pros::Motor intakeMotor, pros::Motor hookMotor, pros::Optical colorSensor, pros::ADIDigitalIn limitSwitch);
+  Intake(pros::Motor intakeMotor, pros::Motor hookMotor, pros::Optical colorSensor, pros::adi::DigitalIn limitSwitch);
   void update();
   void stop();
   void intakeToMogo();
   void intakeToLift();
+  void intakeToHold();
   void outtake();
+  void setIntakeSpeed(int speed);
 
   // TODO: intakeOneRing(), mogoOneRing(), liftOneRing()
 
@@ -56,11 +59,12 @@ private:
 
   double ringStart;
   int ejectTimer = -1;
+  int intakeSpeed = 127;
 
   pros::Motor intakeMotor;
   pros::Motor hookMotor;
   pros::Optical colorSensor;
-  pros::ADIDigitalIn limitSwitch;
+  pros::adi::DigitalIn limitSwitch;
 
   void updateIdle();
   void updateIntaking();
@@ -68,6 +72,7 @@ private:
   void updateEjectStop();
   void updateOuttaking();
   void updateIntakeLift();
+  void updateIntakeHold();
   void updateLiftReverse();
   void updateIntakeMogo();
   
