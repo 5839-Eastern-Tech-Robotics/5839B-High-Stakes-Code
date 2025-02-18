@@ -4,15 +4,19 @@
 #include "pros/llemu.hpp"
 #include "pros/misc.h"
 #include "pros/rtos.hpp"
-#include "robodash/views/selector.hpp"
 #include "robot/subsytems/intake.hpp"
-#include "robodash/api.h"
 #include "autons.hpp"
+#include "robodash/views/selector.hpp"
+#include "robodash/api.h"
 
 
 rd::Selector selector({
   {"Red Alliance", red_auton, "", 5},
   {"Blue Alliance", blue_auton, "", 240},
+
+  {"Red Alliance V2", red_auton_v2, "", 5},
+  {"Blue Alliance V2", blue_auton_v2, "", 240},
+
   {"Skills", skills}
 });
 
@@ -21,9 +25,20 @@ void initialize() {
   controller.clear();
   chassis.calibrate();
   intake.setIntakeSpeed(127);
+  // pros::Task controllerTask([&]() {
+  //   while (true) {
+  //     controller.print(
+  //         0, 0, "Filter Out: %s",
+  //         intake.filter == Color::None
+  //             ? "None"
+  //             : (intake.filter == Color::Blue
+  //                    ? "Blue"
+  //                    : (intake.filter == Color::Red ? "Red" : "All")));
+  //   }
+  // });
 
   pros::Task screenTask([&]() {
-    while (false) {
+    while (true) {
       pros::lcd::print(0, "X: %f", chassis.getPose().x);
       pros::lcd::print(1, "Y: %f", chassis.getPose().y);
       pros::lcd::print(2, "Theta: %f", chassis.getPose().theta);
@@ -87,8 +102,8 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-  skills();
-  return;
+  // skills();
+  // return;
   selector.run_auton();
   // red_no_sawp();
 }
@@ -169,6 +184,22 @@ void opcontrol() {
         intake.setColorFilter(Color::Red);
       else
         intake.setColorFilter(Color::Blue);
+    }
+
+    if (PTO.is_extended()) {
+      if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT))
+        intakeLiftMotor.move(127);
+      else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT))
+        intakeLiftMotor.move(-127);
+      else
+       intakeLiftMotor.move(0);
+    }
+
+    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
+      intakeToggle = true;
+      intakeHookMotor.move(-50);
+      pros::delay(75);
+      intakeHookMotor.move(0);
     }
 
     if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))

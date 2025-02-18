@@ -58,7 +58,7 @@ void Intake::intakeToLift() {
   currentState = State::Intaking;
   ringDestination = Destination::Lift;
 }
-
+;
 void Intake::intakeToMogo() {
   currentState = State::Intaking;
   ringDestination = Destination::Mogo;
@@ -93,7 +93,7 @@ void Intake::updateIdle() {
 }
 
 void Intake::updateIntaking() {
-  this->intakeMotor.move(this->intakeSpeed);
+  this->intakeMotor.move(127);
   this->hookMotor.move(this->intakeSpeed);
 
   if (this->colorSensor.get_proximity() < 200)
@@ -133,12 +133,12 @@ void Intake::updateIntaking() {
 }
 
 void Intake::updateOuttaking() {
-  this->intakeMotor.move(-this->intakeSpeed);
+  this->intakeMotor.move(-127);
   this->hookMotor.move(-this->intakeSpeed);
 }
 
 void Intake::updateEjecting() {
-  this->intakeMotor.move(this->intakeSpeed);
+  this->intakeMotor.move(127);
   this->hookMotor.move(this->intakeSpeed);
 
   // if (this->hookMotor.get_position() - this->ringStart >= this->EJECT_OFFSET)
@@ -163,7 +163,7 @@ void Intake::updateEjectStop() {
 }
 
 void Intake::updateIntakeLift() {
-  this->intakeMotor.move(this->intakeSpeed);
+  this->intakeMotor.move(127);
   this->hookMotor.move(this->intakeSpeed);
   // if (this->hookMotor.get_position() - this->ringStart >=
   // this->LIFT_REVERSE_OFFSET) {
@@ -174,7 +174,7 @@ void Intake::updateIntakeLift() {
 }
 
 void Intake::updateIntakeHold() {
-  this->intakeMotor.move(this->intakeSpeed);
+  this->intakeMotor.move(127);
   this->hookMotor.move(0);
 }
 
@@ -185,7 +185,7 @@ void Intake::updateLiftReverse() {
 }
 
 void Intake::updateIntakeMogo() {
-  this->intakeMotor.move(this->intakeSpeed);
+  this->intakeMotor.move(127);
   this->hookMotor.move(this->intakeSpeed);
   if (this->hookMotor.get_position() - this->ringStart >= this->MOGO_OFFSET)
     this->currentState = State::Intaking;

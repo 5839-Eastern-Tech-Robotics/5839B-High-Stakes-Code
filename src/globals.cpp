@@ -14,7 +14,7 @@ pros::adi::DigitalIn ringSwitch('F');
 pros::Motor intakeMotor(-12);
 pros::Motor intakeHookMotor(6);
 
-pros::MotorGroup intakeLiftMotor({5, -3}, pros::MotorGearset::blue);
+pros::MotorGroup intakeLiftMotor({17, -20}, pros::MotorGearset::blue);
 lemlib::PID liftController(2, 0, 10);
 float intakeLiftSetPoint = 0;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lemlib/chassis/chassis.hpp"
+#include "pros/adi.hpp"
 #include "pros/motor_group.hpp"
 #include <map>
 
@@ -8,12 +9,12 @@ class Chassis {
 enum ChassisStates {
     PTORetractedEmpty,
     PTOExtendedEmpty,
-    PTORetractedMogo,
-    PTOExtendedMogo,
-    PTORetractedMogo4Rings,
-    PTOExtendedMogo4Rings,
-    PTORetracted8Rings,
-    PTOExtended8Rings
+    // PTORetractedMogo,
+    // PTOExtendedMogo,
+    // PTORetractedMogo4Rings,
+    // PTOExtendedMogo4Rings,
+    // PTORetracted8Rings,
+    // PTOExtended8Rings
 };
 
 struct ChassisConfig {
@@ -25,11 +26,11 @@ struct ChassisConfig {
 };
 
 public:
-    Chassis();
-    static Chassis instance;
-    lemlib::Chassis chassis();
-    ChassisStates chassisState();
+    Chassis(ChassisConfig m4, ChassisConfig m6, )
 
 private:
-    std::map<ChassisStates, ChassisConfig> chassies;
+    ChassisConfig m6;
+    ChassisConfig m4;
+    pros::adi::Pneumatics pto;
+    pros::MotorGroup ladybrown;
 };

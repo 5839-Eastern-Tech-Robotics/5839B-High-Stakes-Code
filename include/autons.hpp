@@ -3,16 +3,10 @@
 #include "main.h"
 #include "globals.hpp"
 
-void red_no_sawp();
-
-void red_sawp();
-
-void blue_no_sawp();
-
-void blue_sawp();
-
 void blue_auton();
+void blue_auton_v2();
 
 void red_auton();
+void red_auton_v2();
 
 void skills();

@@ -1,62 +1,108 @@
 #include "autons.hpp"
 #include "globals.hpp"
 #include "pros/rtos.hpp"
+#include "robot/subsytems/intake.hpp"
 
 void red_auton() {
-  chassis.moveToPoint(
-      0, 37, 2000, {.forwards = false, .minSpeed = 50, .earlyExitRange = 10});
-  chassis.moveToPoint(0, 37, 2000, {.forwards = false, .maxSpeed = 50});
+  chassis.setPose({-57, -32, 270});
+  clamp.retract();
+  chassis.moveToPose(-29, -22, 240, 2000, { .forwards = false, .minSpeed = 100, .earlyExitRange = 5 });
+  chassis.waitUntil(25);
   clamp.extend();
+  pros::delay(1000);
   intakeHookMotor.move(127);
+  intakeMotor.move(127);
   pros::delay(750);
+  chassis.turnToPoint(-6, -22, 2000);
+  chassis.moveToPoint(-6, -22, 2000, { .maxSpeed = 40 });
+  pros::delay(10000);
+  intakeHookMotor.move(0);
   intakeMotor.move(0);
   intake.setColorFilter(Color::Blue);
 }
 
+void red_auton_v2() {}
+
 void blue_auton() {
-  chassis.moveToPoint(
-      0, 37, 2000, {.forwards = false, .minSpeed = 50, .earlyExitRange = 10});
-  chassis.moveToPoint(0, 37, 2000, {.forwards = false, .maxSpeed = 50});
+  chassis.setPose({57, -32, 90});
+  clamp.retract();
+  chassis.moveToPoint(22, -22, 2000, { .forwards = false, .maxSpeed = 75 });
+  chassis.waitUntil(30);
   clamp.extend();
+  pros::delay(1000);
   intakeHookMotor.move(127);
+  intakeMotor.move(127);
   pros::delay(750);
+  chassis.turnToPoint(6, -22, 2000);
+  chassis.moveToPoint(6, -22, 2000, { .maxSpeed = 40 });
+  pros::delay(10000);
+  intakeHookMotor.move(0);
   intakeMotor.move(0);
-  intake.setColorFilter(Color::Red);
+  intake.setColorFilter(Color::Blue);
+}
+
+void blue_auton_v2() {
+  chassis.setPose({57, -32, 90});
+  clamp.retract();
+  chassis.moveToPoint(22, -22, 2000, { .forwards = false, .maxSpeed = 75 });
+  chassis.waitUntil(30);
+  clamp.extend();
+  pros::delay(1000);
+  intakeHookMotor.move(127);
+  intakeMotor.move(127);
+  pros::delay(1500);
+  chassis.turnToPoint(24, -48, 1000);
+  chassis.moveToPoint(24, -48, 2000);
+  pros::delay(10000);
+  intakeHookMotor.move(0);
+  intakeMotor.move(0);
+  intake.setColorFilter(Color::Blue);
 }
 
 void skills() {
+  pros::Task subsystems([&]() {
+      while (true) {
+        intake.update();
+        pros::delay(25);
+      }
+  });
+
   chassis.setPose({-60, 0, 90});
   clamp.retract();
-  intakeHookMotor.move(127);
+  intake.intakeToMogo();
   pros::delay(1000);
-  intakeHookMotor.move(0);
+  intake.stop();
   chassis.moveToPoint(-56, 0, 1000);
-  chassis.turnToPoint(-45, -27, 1000, {.forwards = false});
-  chassis.moveToPose(-45, -24, 0, 2000, { .forwards = false, .maxSpeed = 120 });
-                    //  {.forwards = false, .minSpeed = 100, .earlyExitRange = 5});
+
+  chassis.turnToPoint(-45, -27, 1000, { .forwards = false });
+  chassis.moveToPose(-44,3-27, 0, 2000, { .forwards = false, .minSpeed = 100, .earlyExitRange = 5 });
   chassis.waitUntil(24);
-  // pros::delay(250);
+  chassis.cancelMotion();
+  pros::delay(200);
   clamp.extend();
   pros::delay(250);
-  chassis.turnToPoint(-24, -24, 1000);
-  return;
-  chassis.moveToPoint(
-      -60, -60, 2000,
-      {.forwards = false, .minSpeed = 100, .earlyExitRange = 5});
-  // clamp.retract();
-  chassis.moveToPoint(-72, -72, 2000, {.forwards = false});
-  // chassis.moveToPoint(-50, -50, 2000);
-  // chassis.moveToPoint()
-  // chassis.setPose({-58, -17, 120});
-  // chassis.moveToPoint(-52, -21, 2000, {.maxSpeed = 50, .forwards = false});
-  // clamp.extend();
-  // chassis.turnToHeading(270, 1000);
-  // intake.intakeToMogo();
-  // chassis.moveToPoint(-23.5, -23.5, 2000, { .earlyExitRange = 3, .minSpeed =
-  // 50 }); chassis.moveToPoint(-23.5, -23.5, 2000, { .maxSpeed = 50 });
-  // chassis.turnToHeading(180, 1000);
-  // chassis.moveToPoint(-24, -48, 2000, { .earlyExitRange = 3, .minSpeed = 50
-  // }); chassis.moveToPoint(-24, -48, 2000, { .maxSpeed = 50 });
+
+  intake.intakeToMogo();
+  chassis.turnToPoint(-30, -24, 1000);
+  chassis.moveToPoint(-30, -24, 2000, { .minSpeed = 100, .earlyExitRange = 5 });
+  chassis.waitUntilDone();
+  pros::delay(1000);
+
+  chassis.turnToPoint(-20, -48, 1000);
+  chassis.moveToPoint(-20, -48, 2000, { .minSpeed = 100 });
+  chassis.waitUntilDone();
+  pros::delay(1000);
+
+  chassis.turnToPoint(-48, -60, 1000);
+  chassis.moveToPoint(-48, -60, 1000);
+  pros::delay(1000);
+
+  chassis.turnToPoint(-70, -70, 1000, { .forwards = false });
+  chassis.moveToPoint(-70, -70, 1000, { .forwards = false });
+  pros::delay(500);
+  clamp.retract();
+
+  chassis.moveToPoint(-60, -60, 1000);
 }
 
 void red_no_sawp() {
