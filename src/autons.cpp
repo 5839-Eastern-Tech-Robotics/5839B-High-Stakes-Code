@@ -59,6 +59,8 @@ void blue_auton_v2() {
   intake.setColorFilter(Color::Blue);
 }
 
+ASSET(path_7_txt);
+
 void skills() {
   pros::Task subsystems([&]() {
       while (true) {
@@ -103,6 +105,8 @@ void skills() {
   clamp.retract();
 
   chassis.moveToPoint(-60, -60, 1000);
+
+  chassis.follow(path_7_txt, 15, 5000);
 }
 
 void red_no_sawp() {
