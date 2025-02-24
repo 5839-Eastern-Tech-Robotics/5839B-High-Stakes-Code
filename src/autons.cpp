@@ -65,6 +65,7 @@ void skills() {
   pros::Task subsystems([&]() {
       while (true) {
         intake.update();
+        chassis.update();
         pros::delay(25);
       }
   });
