@@ -185,7 +185,7 @@ enum class AngularDirection {
  */
 struct TurnToPointParams {
         /** whether the robot should turn to face the point with the front of the robot. True by default */
-        bool forwards = true;
+       bool forwards = true;
         /** the direction the robot should turn in. AUTO by default */
         AngularDirection direction = AngularDirection::AUTO;
         /** the maximum speed the robot can turn at. Value between 0-127. 127 by default */

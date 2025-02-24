@@ -1,8 +1,10 @@
 #include "globals.hpp"
 #include "lemlib/chassis/trackingWheel.hpp"
+#include "pros/adi.h"
 #include "pros/adi.hpp"
 #include "pros/imu.hpp"
 #include "pros/rotation.hpp"
+#include "robot/subsytems/chassis.hpp"
 #include "robot/subsytems/intake.hpp"
 #include "pros/optical.hpp"
 
@@ -14,12 +16,14 @@ pros::adi::DigitalIn ringSwitch('F');
 pros::Motor intakeMotor(-12);
 pros::Motor intakeHookMotor(6);
 
-pros::MotorGroup intakeLiftMotor({17, -20}, pros::MotorGearset::blue);
-lemlib::PID liftController(2, 0, 10);
-float intakeLiftSetPoint = 0;
+// USE GET_VALUE
+pros::adi::Potentiometer ladybrownPot('D', pros::E_ADI_POT_EDR);
+pros::MotorGroup ladybrown({17, -20}, pros::MotorGearset::blue);
+lemlib::PID ladybrownPID(2, 0, 10);
 
 pros::adi::Pneumatics clamp('H', false);
 pros::adi::Pneumatics PTO('G', false);
+pros::adi::Pneumatics deringer('E', false);
 
 pros::MotorGroup leftMotors({17, 16, -15}, pros::MotorGearset::blue);
 pros::MotorGroup rightMotors({-20, -19, 18}, pros::MotorGearset::blue);
@@ -107,7 +111,7 @@ lemlib::ExpoDriveCurve steerCurve(
     1.019
 );
 
-lemlib::Chassis chassis(
+lemlib::Chassis m6(
     drivetrain, 
     linearController, 
     angularController, 
@@ -116,7 +120,7 @@ lemlib::Chassis chassis(
     &steerCurve
 );
 
-lemlib::Chassis chassisPTO(
+lemlib::Chassis m4(
     drivetrainPTO,
     linearController,
     angularController,
@@ -125,4 +129,5 @@ lemlib::Chassis chassisPTO(
     &steerCurve
 );
 
-Intake intake(intakeMotor, intakeHookMotor, colorSensor, ringSwitch);
+class Intake intake(intakeMotor, intakeHookMotor, colorSensor, ringSwitch);
+Chassis chassis(&m6, &m4, PTO, &ladybrown, ladybrownPot, ladybrownPID);

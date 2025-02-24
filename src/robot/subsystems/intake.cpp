@@ -7,7 +7,7 @@
 #include <filesystem>
 
 Intake::Intake(pros::Motor intakeMotor, pros::Motor hookMotor,
-               pros::Optical colorSensor, pros::ADIDigitalIn limitSwitch)
+               pros::Optical colorSensor, pros::adi::DigitalIn limitSwitch)
     : intakeMotor(intakeMotor), hookMotor(hookMotor), colorSensor(colorSensor),
       currentState(State::Idle), currentRing(Color::None),
       ringDestination(Destination::Mogo), limitSwitch(limitSwitch) {}
