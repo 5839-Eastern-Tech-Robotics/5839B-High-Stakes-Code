@@ -26,6 +26,8 @@ public:
   void move(int8_t vel);
   lemlib::Chassis *chassis();
 
+  ChassisState currentState = ChassisState::Driving;
+
 private:
   void updateIntake();
   void updateDriving();
@@ -39,6 +41,5 @@ private:
   pros::MotorGroup *ladybrown;
   lemlib::PID ladybrownPid;
   pros::adi::Potentiometer ladybrownPos;
-  ChassisState currentState = ChassisState::Driving;
   int8_t desiredManualVel = 0;
 };

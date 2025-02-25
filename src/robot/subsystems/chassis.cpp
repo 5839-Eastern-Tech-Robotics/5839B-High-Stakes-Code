@@ -1,11 +1,17 @@
 #include "robot/subsytems/chassis.hpp"
 #include "lemlib/chassis/chassis.hpp"
 #include <cstdint>
+#include <cstdlib>
 
 #define INTAKE_ENCODER_POS 3720
-#define DRIVING_ENCODER_POS 3480
+#define DRIVING_ENCODER_POS 2620
 #define READY_ENCODER_POS 2160
 #define SCORE_ENCODER_POS 1430
+#define LADYBROWN_SPEED 100
+
+bool is_close(int a, int b, int epsilon = 100) {
+  return std::abs(a - b) <= epsilon;
+}
 
 Chassis::Chassis(lemlib::Chassis *m6, lemlib::Chassis *m4,
                  pros::adi::Pneumatics pto, pros::MotorGroup *ladybrown,
@@ -58,22 +64,50 @@ void Chassis::update() {
 
 void Chassis::updateIntake() {
   if (!this->pto.is_extended()) this->pto.extend();
-  this->ladybrown->move(this->ladybrownPid.update(INTAKE_ENCODER_POS - this->ladybrownPos.get_value()));
+  // this->ladybrown->move(
+  //     !is_close(this->ladybrownPos.get_value(), INTAKE_ENCODER_POS)
+  //         ? (this->ladybrownPos.get_value() > INTAKE_ENCODER_POS
+  //                ? LADYBROWN_SPEED
+  //                : -LADYBROWN_SPEED)
+  //         : 0);
+  this->ladybrown->move(-this->ladybrownPid.update(
+      INTAKE_ENCODER_POS - this->ladybrownPos.get_value()));
 }
 
 void Chassis::updateDriving() {
-  this->ladybrown->move(0);
-  if (this->pto.is_extended()) this->pto.retract();
+  if (this->ladybrownPos.get_value() > DRIVING_ENCODER_POS) {
+    this->pto.retract();
+  } else {
+    if (!this->pto.is_extended())
+      this->pto.extend();
+    // this->ladybrown->move(LADYBROWN_SPEED);
+    this->ladybrown->move(-this->ladybrownPid.update(
+        DRIVING_ENCODER_POS - this->ladybrownPos.get_value()));
+  }
 }
 
 void Chassis::updateReady() {
   if (!this->pto.is_extended()) this->pto.extend();
-  this->ladybrown->move(this->ladybrownPid.update(READY_ENCODER_POS - this->ladybrownPos.get_value()));
+  // this->ladybrown->move(
+  //     !is_close(this->ladybrownPos.get_value(), READY_ENCODER_POS)
+  //         ? (this->ladybrownPos.get_value() > READY_ENCODER_POS
+  //                ? LADYBROWN_SPEED
+  //                : -LADYBROWN_SPEED)
+  //         : 0);
+  this->ladybrown->move(-this->ladybrownPid.update(READY_ENCODER_POS -
+  this->ladybrownPos.get_value()));
 }
 
 void Chassis::updateScore() {
   if (!this->pto.is_extended()) this->pto.extend();
-  this->ladybrown->move(this->ladybrownPid.update(SCORE_ENCODER_POS - this->ladybrownPos.get_value()));
+  // this->ladybrown->move(
+  //     !is_close(this->ladybrownPos.get_value(), SCORE_ENCODER_POS)
+  //         ? (this->ladybrownPos.get_value() > SCORE_ENCODER_POS
+  //                ? LADYBROWN_SPEED
+  //                : -LADYBROWN_SPEED)
+  //         : 0);
+  this->ladybrown->move(-this->ladybrownPid.update(SCORE_ENCODER_POS -
+  this->ladybrownPos.get_value()));
 }
 
 void Chassis::updateManual() {

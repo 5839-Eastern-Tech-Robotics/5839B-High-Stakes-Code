@@ -45,61 +45,72 @@ void initialize() {
       pros::lcd::print(2, "Theta: %f", chassis.chassis()->getPose().theta);
 
       pros::lcd::print(3, "Encoder Value:  %d", ladybrownPot.get_value());
+      pros::lcd::print(
+          4, "Chassis State: %s",
+          chassis.currentState == ChassisState::Driving
+              ? "Driving"
+              : (chassis.currentState == ChassisState::Intake
+                     ? "Intake"
+                     : (chassis.currentState == ChassisState::Ready
+                            ? "Ready"
+                            : (chassis.currentState == ChassisState::Score
+                                   ? "Score"
+                                   : "Manual"))));
 
-          // controller.print(
-          //     0, 0, "Filter Out: %s",
-          //     intake.filter == Color::None
-          //         ? "None"
-          //         : (intake.filter == Color::Blue
-          //                ? "Blue"
-          //                : (intake.filter == Color::Red ? "Red" : "All")));
+      controller.print(
+          0, 0, "Filter Out: %s",
+          intake.filter == Color::None
+              ? "None"
+              : (intake.filter == Color::Blue
+                     ? "Blue"
+                     : (intake.filter == Color::Red ? "Red" : "All")));
 
-          // pros::lcd::print(
-          //     3, "State: %s",
-          //     intake.currentState == State::Idle
-          //         ? "Idle"
-          //         : (intake.currentState == State::Intaking
-          //                ? "Intaking"
-          //                : (intake.currentState == State::Ejecting
-          //                       ? "Ejecting"
-          //                       : (intake.currentState == State::EjectStop
-          //                              ? "Eject Stop"
-          //                              : (intake.currentState ==
-          //                              State::IntakeHold
-          //                                     ? "Intake Hold"
-          //                                     : (intake.currentState ==
-          //                                                State::IntakeMogo
-          //                                            ? "Intake Mogo"
-          //                                            : (intake.currentState
-          //                                            ==
-          //                                                       State::Outtaking
-          //                                                   ? "Outtaking"
-          //                                                   : "Other")))))));
+      // pros::lcd::print(
+      //     3, "State: %s",
+      //     intake.currentState == State::Idle
+      //         ? "Idle"
+      //         : (intake.currentState == State::Intaking
+      //                ? "Intaking"
+      //                : (intake.currentState == State::Ejecting
+      //                       ? "Ejecting"
+      //                       : (intake.currentState == State::EjectStop
+      //                              ? "Eject Stop"
+      //                              : (intake.currentState ==
+      //                              State::IntakeHold
+      //                                     ? "Intake Hold"
+      //                                     : (intake.currentState ==
+      //                                                State::IntakeMogo
+      //                                            ? "Intake Mogo"
+      //                                            : (intake.currentState
+      //                                            ==
+      //                                                       State::Outtaking
+      //                                                   ? "Outtaking"
+      //                                                   : "Other")))))));
 
-          // pros::lcd::print(3, "BR: %f, MR: %f, FR: %f",
-          //     rightMotors.get_actual_velocity_all()[0],
-          //     rightMotors.get_actual_velocity_all()[1],
-          //     rightMotors.get_actual_velocity_all()[2]
-          // );
-          // pros::lcd::print(3, "BL: %f, ML: %f, FL: %f",
-          //     leftMotors.get_actual_velocity_all()[0],
-          //     leftMotors.get_actual_velocity_all()[1],
-          //     leftMotors.get_actual_velocity_all()[2]
-          // );
-          // pros::lcd::print(
-          //     4, "Ring: %s",
-          //     intake.getCurrentRingColor() == Color::Blue
-          //         ? "Blue"
-          //         : (intake.getCurrentRingColor() == Color::Red ? "Red" :
-          //         "None"));
-          // pros::lcd::print(5, "Color Sensor: %f",
-          // (float)colorSensor.get_hue()); pros::lcd::print(6, "Switch: %s",
-          // ringSwitch.get_value() ? "true" : "false"); pros::lcd::print(2,
-          // "Distance Sensor: %f",
-          //                  (float)colorSensor.get_proximity());
-          // pros::lcd::print(4, "Hook Motor: %f",
-          //                  (float)intakeHookMotor.get_position());
-          pros::delay(50);
+      // pros::lcd::print(3, "BR: %f, MR: %f, FR: %f",
+      //     rightMotors.get_actual_velocity_all()[0],
+      //     rightMotors.get_actual_velocity_all()[1],
+      //     rightMotors.get_actual_velocity_all()[2]
+      // );
+      // pros::lcd::print(3, "BL: %f, ML: %f, FL: %f",
+      //     leftMotors.get_actual_velocity_all()[0],
+      //     leftMotors.get_actual_velocity_all()[1],
+      //     leftMotors.get_actual_velocity_all()[2]
+      // );
+      // pros::lcd::print(
+      //     4, "Ring: %s",
+      //     intake.getCurrentRingColor() == Color::Blue
+      //         ? "Blue"
+      //         : (intake.getCurrentRingColor() == Color::Red ? "Red" :
+      //         "None"));
+      // pros::lcd::print(5, "Color Sensor: %f",
+      // (float)colorSensor.get_hue()); pros::lcd::print(6, "Switch: %s",
+      // ringSwitch.get_value() ? "true" : "false"); pros::lcd::print(2,
+      // "Distance Sensor: %f",
+      //                  (float)colorSensor.get_proximity());
+      // pros::lcd::print(4, "Hook Motor: %f",
+      //                  (float)intakeHookMotor.get_position());
+      pros::delay(50);
     }
   });
 }
