@@ -7,11 +7,10 @@
 #include <cstdint>
 
 enum ChassisState {
-  Intake,
   Driving,
-  Ready,
-  Score,
-  ManualControl,
+  Manual,
+  Cooldown,
+
 };
 
 class Chassis {
@@ -20,20 +19,18 @@ public:
           pros::MotorGroup *ladybrown, pros::adi::Potentiometer ladybrownPos,
           lemlib::PID ladybrownPid);
   void update();
-  ChassisState nextState();
-  ChassisState prevState();
-  void toState(ChassisState pos);
+  void toggleLock();
+  void lock(ChassisState state);
   void move(int8_t vel);
   lemlib::Chassis *chassis();
 
   ChassisState currentState = ChassisState::Driving;
+  int8_t desiredManualVel = 0;
 
 private:
-  void updateIntake();
   void updateDriving();
-  void updateReady();
-  void updateScore();
   void updateManual();
+  void updateCooldown();
 
   lemlib::Chassis *m6;
   lemlib::Chassis *m4;
@@ -41,5 +38,6 @@ private:
   pros::MotorGroup *ladybrown;
   lemlib::PID ladybrownPid;
   pros::adi::Potentiometer ladybrownPos;
-  int8_t desiredManualVel = 0;
+  uint cooldownTime = -1;
+  bool locked = false;
 };
