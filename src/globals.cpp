@@ -19,7 +19,7 @@ pros::Motor intakeHookMotor(6);
 // USE GET_VALUE
 pros::adi::Potentiometer ladybrownPot('D', pros::E_ADI_POT_EDR);
 pros::MotorGroup ladybrown({17, -20}, pros::MotorGearset::blue);
-lemlib::PID ladybrownPID(1, 0, 5); // TODO: TUNE THIS WJAT
+lemlib::PID ladybrownPID(0.3, 0, 0); // TODO: TUNE THIS WJAT
 
 pros::adi::Pneumatics clamp('H', false);
 pros::adi::Pneumatics PTO('G', false);

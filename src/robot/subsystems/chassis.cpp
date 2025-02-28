@@ -70,8 +70,7 @@ void Chassis::updateIntake() {
   //                ? LADYBROWN_SPEED
   //                : -LADYBROWN_SPEED)
   //         : 0);
-  this->ladybrown->move(-this->ladybrownPid.update(
-      INTAKE_ENCODER_POS - this->ladybrownPos.get_value()));
+  this->ladybrown->move(-LADYBROWN_SPEED);
 }
 
 void Chassis::updateDriving() {
