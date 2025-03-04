@@ -1,10 +1,12 @@
 #include "robot/subsytems/chassis.hpp"
+#include "globals.hpp"
 #include "lemlib/chassis/chassis.hpp"
+#include "lemlib/pose.hpp"
 #include "pros/rtos.hpp"
 #include <cstdint>
 #include <cstdlib>
 
-#define DRIVING_ENCODER_POS 2260
+#define DRIVING_ENCODER_POS 2800
 #define E_STOP_MIN 1000
 #define E_STOP_MAX 3800
 
@@ -78,3 +80,43 @@ void Chassis::updateCooldown() {
   if (pros::millis() > this->cooldownTime)
     this->currentState = ChassisState::Driving;
 }
+
+void Chassis::setPose(lemlib::Pose pose) {
+  m4->setPose(pose);
+  m6->setPose(pose);
+}
+
+lemlib::Pose Chassis::getPose(bool radians, bool standardPos) {
+  return chassis()->getPose(radians, standardPos);
+}
+
+void Chassis::turnToPoint(float x, float y, int timeout,
+                          lemlib::TurnToPointParams params, bool async) {
+  chassis()->turnToPoint(x, y, timeout, params, async);
+}
+
+void Chassis::turnToHeading(float theta, int timeout,
+                            lemlib::TurnToHeadingParams params, bool async) {
+  chassis()->turnToHeading(theta, timeout, params, async);
+}
+
+void Chassis::moveToPoint(float x, float y, int timeout,
+                          lemlib::MoveToPointParams params, bool async) {
+  chassis()->moveToPoint(x, y, timeout, params, async);
+}
+
+void Chassis::moveToPose(float x, float y, float theta, int timeout,
+                         lemlib::MoveToPoseParams params, bool async) {
+  chassis()->moveToPose(x, y, theta, timeout, params, async);
+}
+
+void Chassis::follow(const asset &path, float lookahead, int timeout,
+                     bool forwards, bool async) {
+  chassis()->follow(path, lookahead, timeout, forwards, async);
+}
+
+void Chassis::waitUntil(float dist) { chassis()->waitUntil(dist); }
+
+void Chassis::waitUntilDone() { chassis()->waitUntilDone(); }
+
+void Chassis::cancelMotion() { chassis()->cancelMotion(); }

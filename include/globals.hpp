@@ -56,4 +56,4 @@ extern lemlib::Chassis m6;
 extern lemlib::Chassis m4;
 
 extern class Intake intake;
-extern Chassis chassis;
+extern class Chassis chassis;

@@ -1,26 +1,26 @@
 #include "main.h"
 #include "autons.hpp"
 #include "globals.hpp"
-#include "pros/llemu.hpp"
 #include "pros/misc.h"
 #include "pros/rtos.hpp"
-#include "robodash/api.h"
 #include "robodash/views/selector.hpp"
 #include "robot/subsytems/chassis.hpp"
 #include "robot/subsytems/intake.hpp"
+#include "robot/ui/lcd.hpp"
 
-// rd::Selector selector({
-//   {"Red Alliance", red_auton, "", 5},
-//   {"Blue Alliance", blue_auton, "", 240},
+rd::Selector selector({
+  {"Red Alliance", red_auton, "", 5},
+  {"Blue Alliance", blue_auton, "", 240},
 
-//   {"Red Alliance V2", red_auton_v2, "", 5},
-//   {"Blue Alliance V2", blue_auton_v2, "", 240},
+  {"Red Alliance V2", red_auton_v2, "", 5},
+  {"Blue Alliance V2", blue_auton_v2, "", 240},
 
-//   {"Skills", skills}
-// });
+  {"Skills", skills}
+});
+
+LCD lcd{};
 
 void initialize() {
-  pros::lcd::initialize();
   controller.clear();
   m4.calibrate();
   m6.calibrate();
@@ -28,18 +28,18 @@ void initialize() {
 
   pros::Task screenTask([&]() {
     while (true) {
-      pros::lcd::print(0, "X: %f", chassis.chassis()->getPose().x);
-      pros::lcd::print(1, "Y: %f", chassis.chassis()->getPose().y);
-      pros::lcd::print(2, "Theta: %f", chassis.chassis()->getPose().theta);
+      // lcd.printf(0, "X: %f", chassis.chassis()->getPose().x);
+      // lcd.printf(1, "Y: %f", chassis.chassis()->getPose().y);
+      // lcd.printf(2, "Theta: %f", chassis.chassis()->getPose().theta);
 
-      pros::lcd::print(3, "Encoder Value:  %d", ladybrownPot.get_value());
-      pros::lcd::print(4, "Desired Velocity %d", chassis.desiredManualVel);
-      pros::lcd::print(5, "State: %s",
-                       chassis.currentState == ChassisState::Manual
-                           ? "Manual"
-                           : (chassis.currentState == ChassisState::Cooldown
-                                  ? "Cooldown"
-                                  : "Driving"));
+      // lcd.printf(3, "Encoder Value:  %d", ladybrownPot.get_value());
+      // lcd.printf(4, "Desired Velocity %d", chassis.desiredManualVel);
+      // lcd.printf(5, "State: %s",
+      //                  chassis.currentState == ChassisState::Manual
+      //                      ? "Manual"
+      //                      : (chassis.currentState == ChassisState::Cooldown
+      //                             ? "Cooldown"
+      //                             : "Driving"));
 
       controller.print(
           0, 0, "Filter Out: %s",
@@ -63,6 +63,7 @@ void autonomous() {
 }
 
 void opcontrol() {
+  return;
   bool intakeToggle = false;
   bool debugMode = false;
 
@@ -121,7 +122,7 @@ void opcontrol() {
         (controller.get_digital(pros::E_CONTROLLER_DIGITAL_A) && controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT)))
       debugMode = !debugMode;
 
-    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)) {
+    if (debugMode && controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) {
       intakeToggle = true;
       if (intake.currentState == State::IntakeMogo ||
           intake.currentState == State::Intaking) {
@@ -131,7 +132,7 @@ void opcontrol() {
       }
     }
 
-    if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
+    if (debugMode && controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)) {
       intakeToggle = true;
       if (intake.currentState == State::Outtaking) {
         intake.stop();

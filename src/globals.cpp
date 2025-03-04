@@ -130,4 +130,4 @@ lemlib::Chassis m4(
 );
 
 class Intake intake(intakeMotor, intakeHookMotor, colorSensor, ringSwitch);
-Chassis chassis(&m6, &m4, PTO, &ladybrown, ladybrownPot, ladybrownPID);
+class Chassis chassis(&m6, &m4, PTO, &ladybrown, ladybrownPot, ladybrownPID);
