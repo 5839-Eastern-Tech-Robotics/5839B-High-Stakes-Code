@@ -91,17 +91,17 @@ void skills() {
 	chassis.waitUntilDone();
 	pros::delay(1000);
 
-	chassis.turnToPoint(-20, -48, 1000);
-	chassis.moveToPoint(-20, -48, 2000, { .minSpeed = 100 });
+	chassis.turnToPoint(-20, -48, 1000); // -20, -48 is the start of 4
+	chassis.moveToPoint(-20, -48, 2000, { .minSpeed = 100, .earlyExitRange = 5 }); // this is 3 i think
 	chassis.waitUntilDone();
 	pros::delay(1000);
 
 	chassis.turnToPoint(-48, -60, 1000);
-	chassis.moveToPoint(-48, -60, 1000);
+	chassis.moveToPoint(-48, -60, 1000); // since the last motion went over in the negative y direction, this motion is angled slightly in the positive y direction, but it seems to be in the nonpositive y direction and predominantly in the negative x direction
 	pros::delay(1000);
 
-	chassis.turnToPoint(-70, -70, 1000, { .forwards = false });
-	chassis.moveToPoint(-70, -70, 1000, { .forwards = false });
+	chassis.turnToPoint(-70, -70, 1000, { .forwards = false }); // turn around
+	chassis.moveToPoint(-70, -70, 1000, { .forwards = false }); // go to corner
 	pros::delay(500);
 	clamp.retract();
 
