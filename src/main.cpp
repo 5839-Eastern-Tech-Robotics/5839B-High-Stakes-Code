@@ -42,7 +42,7 @@ void initialize() {
       //                             : "Driving"));
 
       controller.print(
-          0, 0, "Filter Out: %s",
+          0, 0, "Filter: %s",
           intake.filter == Color::None
               ? "None"
               : (intake.filter == Color::Blue
@@ -59,11 +59,10 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
-  // selector.run_auton();
+  selector.run_auton();
 }
 
 void opcontrol() {
-  return;
   bool intakeToggle = false;
   bool debugMode = false;
 
@@ -130,6 +129,8 @@ void opcontrol() {
       } else {
         intake.intakeToMogo();
       }
+      }
+    }
     }
 
     if (debugMode && controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)) {
