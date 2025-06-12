@@ -1,10 +1,10 @@
 #include "robot/ui/lcd.hpp"
 #include "liblvgl/core/lv_obj.h"
 #include "liblvgl/core/lv_obj_pos.h"
+#include "liblvgl/core/lv_obj_scroll.h"
 #include "liblvgl/core/lv_obj_style.h"
 #include "liblvgl/core/lv_obj_tree.h"
 #include "liblvgl/extra/layouts/flex/lv_flex.h"
-#include "liblvgl/extra/widgets/list/lv_list.h"
 #include "liblvgl/misc/lv_area.h"
 #include "liblvgl/widgets/lv_label.h"
 #include "robodash/core.h"
@@ -35,6 +35,9 @@ LCD::LCD(std::string name) {
   lv_obj_set_size(display, 180, 220);
   lv_obj_align(display, LV_ALIGN_CENTER, -40, 0);
   lv_obj_add_style(display, &style_transp, 0);
+  lv_obj_set_layout(display, LV_LAYOUT_FLEX);
+  lv_obj_set_flex_flow(display, LV_FLEX_FLOW_COLUMN);
+  lv_obj_set_scroll_dir(display, LV_DIR_VER);
 
   lv_obj_t *list_btns = lv_obj_create(view->obj);
   lv_obj_add_style(list_btns, &style_transp, 0);
@@ -116,10 +119,9 @@ void LCD::print(uint line, std::string str) {
         contents.at(line).contents = str;
         lv_label_set_text(contents.at(line).obj, str.c_str());
     } else {
-        lv_obj_t *new_btn = lv_list_add_btn(display, NULL, str.c_str());
-        contents.insert(std::make_pair(line, line_t({new_btn, str})));
-
-		lv_obj_add_style(new_btn, &style_list_btn, 0);
-		lv_obj_set_style_transform_width(new_btn, -8, 0);
+        lv_obj_t *label = lv_label_create(display);
+        contents.insert(std::make_pair(line, line_t({label, str})));
+        lv_obj_add_style(label, &style_text_mono, 0);
+        lv_label_set_text(display, str.c_str());
     }
 }

@@ -1,13 +1,11 @@
 #pragma once
 
 #include "liblvgl/core/lv_obj.h"
-#include "liblvgl/lvgl.h"
 #include "robodash/core.h"
 #include <cstdio>
 #include <map>
 #include <string>
 #include <sys/types.h>
-#include <vector>
 
 class LCD {
 public:

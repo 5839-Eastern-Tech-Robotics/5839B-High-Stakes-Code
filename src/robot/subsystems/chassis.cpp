@@ -2,12 +2,13 @@
 #include "globals.hpp"
 #include "lemlib/chassis/chassis.hpp"
 #include "lemlib/pose.hpp"
+#include "pros/motors.h"
 #include "pros/rtos.hpp"
 #include <cstdint>
 #include <cstdlib>
 
 #define DRIVING_ENCODER_POS 2800
-#define E_STOP_MIN 1000
+#define E_STOP_MIN 1800
 #define E_STOP_MAX 3800
 
 bool is_close(int a, int b, int epsilon = 100) {
@@ -53,12 +54,17 @@ void Chassis::updateDriving() {
   if (this->desiredManualVel != 0 && !this->locked)
     this->currentState = ChassisState::Manual;
 
-  if (this->pto.is_extended())
+  if (this->pto.is_extended()) {
     this->pto.retract();
+    this->ladybrown->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
+  }
 }
 
 void Chassis::updateManual() {
-  if (!this->pto.is_extended()) this->pto.extend();
+  if (!this->pto.is_extended()) {
+    this->pto.extend();
+    this->ladybrown->set_brake_mode_all(pros::E_MOTOR_BRAKE_HOLD);
+  }
 
   if (this->ladybrownPos.get_value() <= E_STOP_MIN && this->desiredManualVel > 0)
     this->ladybrown->move(0);
